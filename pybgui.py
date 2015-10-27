@@ -69,7 +69,8 @@ class App:
     def run_code(self):
         import os
         MAIN_FILENAME = os.environ.get("PYBOLATOR_MAIN", "main.py")
-        exec(compile(open(MAIN_FILENAME).read(), MAIN_FILENAME, 'exec'))
+        obj = compile(open(MAIN_FILENAME).read(), MAIN_FILENAME, 'exec')
+        exec(obj, globals())
 
 
 root = Tk()
