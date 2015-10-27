@@ -3,6 +3,10 @@ pybolator
 
 PyBoard emulator
 
-Put `pyb.py` with your `main.py` and run:
+Put your `main.py` in the project root and run:
 
-  $ python3 main.py
+  $ python3 pybulator.py
+
+For development run:
+
+  $ PYBOLATOR_MAIN=test.py python pybolator.py
