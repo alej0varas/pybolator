@@ -67,10 +67,6 @@ class App:
         self.switch = switch
 
     def run_code(self):
-        import os
-        MAIN_FILENAME = os.environ.get("PYBOLATOR_MAIN", "main.py")
-        obj = compile(open(MAIN_FILENAME).read(), MAIN_FILENAME, 'exec')
-        exec(obj, globals())
-
+        self.board._run_code()
 
 root = Tk()

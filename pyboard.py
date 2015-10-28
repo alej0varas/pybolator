@@ -104,3 +104,16 @@ def delay(miliseconds):
     app.delay()
 
     sleep(miliseconds / 1000)
+
+
+def _run_code():
+    import threading
+
+    def target():
+        import os
+        MAIN_FILENAME = os.environ.get("PYBOLATOR_MAIN", "main.py")
+        obj = compile(open(MAIN_FILENAME).read(), MAIN_FILENAME, 'exec')
+        exec(obj, globals())
+
+    thread = threading.Thread(target=target)
+    thread.start()
