@@ -2,11 +2,12 @@ import pyb
 
 # This code can be run on your pyboard without modifications
 
-import test_accel
-import test_builtins
-import test_delay
-import test_led
-import test_switch
+from tests import (
+    test_accel,
+    test_led,
+    test_switch,
+    test_builtins
+)
 
 # TODO
 # continue from here
