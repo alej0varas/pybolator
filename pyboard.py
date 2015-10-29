@@ -1,7 +1,7 @@
 from random import randint
 from time import sleep
+import sys
 
-app = None
 
 LEDS_AMOUNT = 4
 SWITCHES_AMOUNT = 1
@@ -10,14 +10,14 @@ SWITCHES_AMOUNT = 1
 class Accel:
 
     def x(self):
-        print("ACCEL:")
-        print("\tx")
+        sys.stderr.write("ACCEL:\n")
+        sys.stderr.write("\tx\n")
 
         return randint(0, 10)
 
     def y(self):
-        print("ACCEL:")
-        print("\ty")
+        sys.stderr.write("ACCEL:\n")
+        sys.stderr.write("\ty\n")
 
         return randint(0, 10)
 
@@ -38,15 +38,13 @@ class _LED:
 
     def on(self):
         self.state = True
-        app.leds[self.led].update()
-        print("LED %s:" % self.led)
-        print("\t on")
+        sys.stderr.write("LED %s:\n" % self.led)
+        sys.stderr.write("\t on\n")
 
     def off(self):
         self.state = False
-        app.leds[self.led].update()
-        print("LED %s:" % self.led)
-        print("\t off")
+        sys.stderr.write("LED %s:\n" % self.led)
+        sys.stderr.write("\t off\n")
 
     def toggle(self):
         if self.state:
@@ -55,8 +53,8 @@ class _LED:
 
     def intensity(self, value):
         self.intensity_value = value
-        print("LED %s:" % self.led)
-        print("\t intensity %s" % self.intensity_value)
+        sys.stderr.write("LED %s:\n" % self.led)
+        sys.stderr.write("\t intensity %s\n" % self.intensity_value)
 
 
 leds = [_LED(i) for i in range(LEDS_AMOUNT)]
@@ -72,15 +70,15 @@ class _Switch:
     callable = None
 
     def __call__(self):
-        print("SWITCH:")
-        print("\t call > %s" % self.status)
+        sys.stderr.write("SWITCH:\n")
+        sys.stderr.write("\t call > %s\n" % self.status)
 
         return self.status
 
     def callback(self, callable):
         self.callable = callable
-        print("SWITCH:")
-        print("\t callback %s" % self.callable)
+        sys.stderr.write("SWITCH:\n")
+        sys.stderr.write("\t callback %s\n" % self.callable)
 
     def _down(self):
         self.status = True
@@ -97,23 +95,21 @@ def Switch():
     return switch
 
 
+
+
 def delay(miliseconds):
-    print("PYB:")
-    print("\tdelay %s" % miliseconds)
-
-    app.delay()
-
+    sys.stderr.write("PYB:\n")
+    sys.stderr.write("\tdelay %s\n" % miliseconds)
     sleep(miliseconds / 1000)
 
 
 def _run_code():
-    import threading
-
     def target():
         import os
         MAIN_FILENAME = os.environ.get("PYBOLATOR_MAIN", "main.py")
         obj = compile(open(MAIN_FILENAME).read(), MAIN_FILENAME, 'exec')
         exec(obj, globals())
 
+    import threading
     thread = threading.Thread(target=target)
     thread.start()

@@ -1,4 +1,6 @@
-from tkinter import *
+import sys
+
+from tkinter import Button, DISABLED, Frame, Label, Tk
 
 CONTROL_ROW = 0
 BOARD_ROW = CONTROL_ROW + 1
@@ -14,17 +16,14 @@ class LED:
 
    def update(self):
       if self.obj.state:
-         print('GUI:LED:ON')
+         sys.stderr.write('GUI:LED:ON\n')
          self.widget.config(background='blue')
       if not self.obj.state:
-         print('GUI:LED:OFF')
+         sys.stderr.write('GUI:LED:OFF\n')
          self.widget.config(background='white')
 
 
 class App:
-
-    def delay(self):
-        pass
 
     def __init__(self, master, board):
         self.frame = Frame(master)
@@ -69,4 +68,18 @@ class App:
     def run_code(self):
         self.board._run_code()
 
-root = Tk()
+    def update(self):
+       for led in self.leds:
+          led.update()
+
+
+def main(board):
+   root = Tk()
+   app = App(root, board)
+
+   def update_gui():
+      root.after(500, update_gui)
+      app.update()
+
+   root.after(0, update_gui)
+   root.mainloop()
