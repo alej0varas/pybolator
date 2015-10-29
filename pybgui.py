@@ -23,6 +23,24 @@ class LED:
             self.widget.config(background='white')
 
 
+class Switch:
+
+    def __init__(self, obj, widget):
+        self.obj = obj
+        self.widget = widget
+        self.widget.bind("<Button-1>", self.press_command)
+        self.widget.bind("<ButtonRelease-1>", self.release_command)
+
+    def update(self):
+        if self.obj.pressed:
+            self.obj.callable()
+
+    def press_command(self, event):
+        self.obj._press()
+
+    def release_command(self, event):
+        self.obj._release()
+
 class App:
 
     def __init__(self, master, board):
@@ -55,15 +73,11 @@ class App:
             self.leds.append(led)
 
     def init_switch(self):
-        def switch_push():
-            self.board._switch._down()
-
         label = Label(self.frame, text="switch")
         label.grid(row=BOARD_ROW, column=SWITCH_COLUMN)
-        switch = Button(
-            self.frame, background="black", command=switch_push
-        )
-        switch.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN)
+        switch_w = Button(self.frame, background="black")
+        switch_w.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN)
+        switch = Switch(self.board._switch, switch_w)
         self.switch = switch
 
     def run_code(self):
@@ -72,6 +86,7 @@ class App:
     def update(self):
         for led in self.leds:
             led.update()
+        self.switch.update()
 
 
 def main(board):

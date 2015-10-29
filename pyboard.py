@@ -57,27 +57,32 @@ _leds = [_LED(i) for i in range(_LEDS_AMOUNT)]
 
 class _Switch:
 
-    status = False
+    pressed = False
     callable = None
 
     def __call__(self):
         sys.stderr.write("SWITCH:\n")
-        sys.stderr.write("\t call > %s\n" % self.status)
+        sys.stderr.write("\t call > %s\n" % self.pressed)
 
-        return self.status
+        return self.pressed
 
     def callback(self, callable):
         self.callable = callable
         sys.stderr.write("SWITCH:\n")
         sys.stderr.write("\t callback %s\n" % self.callable)
 
-    def _down(self):
-        self.status = True
-        self.callable()
+    def _press(self):
+        self.pressed = True
 
-    def _up(self):
-        self.status = False
+        sys.stderr.write("SWITCH:\n")
+        sys.stderr.write("\t pressed\n")
 
+
+    def _release(self):
+        self.pressed = False
+
+        sys.stderr.write("SWITCH:\n")
+        sys.stderr.write("\t released\n")
 
 _switch = _Switch()
 
