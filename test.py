@@ -1,7 +1,3 @@
-import pyb
-
-# This code can be run on your pyboard without modifications
-
 from tests import (
     test_accel,
     test_led,

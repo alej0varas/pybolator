@@ -7,11 +7,8 @@ import pyb
 #################
 
 accel = pyb.Accel()
-
-
 # x
 accel.x()
-
 
 accel = pyb.Accel()
 light = pyb.LED(3)

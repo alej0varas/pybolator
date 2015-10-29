@@ -10,17 +10,17 @@ SWITCH_COLUMN = LEDS_COLUMN + 1
 
 class LED:
 
-   def __init__(self, obj, widget):
-      self.obj = obj
-      self.widget = widget
+    def __init__(self, obj, widget):
+        self.obj = obj
+        self.widget = widget
 
-   def update(self):
-      if self.obj.state:
-         sys.stderr.write('GUI:LED:ON\n')
-         self.widget.config(background='blue')
-      if not self.obj.state:
-         sys.stderr.write('GUI:LED:OFF\n')
-         self.widget.config(background='white')
+    def update(self):
+        if self.obj.state:
+            sys.stderr.write('GUI:LED:ON\n')
+            self.widget.config(background='blue')
+        if not self.obj.state:
+            sys.stderr.write('GUI:LED:OFF\n')
+            self.widget.config(background='white')
 
 
 class App:
@@ -58,10 +58,11 @@ class App:
         def switch_push():
             self.board._switch._down()
 
-        Label(self.frame, text="switch").grid(row=BOARD_ROW, column=SWITCH_COLUMN)
+        label = Label(self.frame, text="switch")
+        label.grid(row=BOARD_ROW, column=SWITCH_COLUMN)
         switch = Button(
             self.frame, background="black", command=switch_push
-            )
+        )
         switch.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN)
         self.switch = switch
 
@@ -69,17 +70,17 @@ class App:
         self.board._run_code()
 
     def update(self):
-       for led in self.leds:
-          led.update()
+        for led in self.leds:
+            led.update()
 
 
 def main(board):
-   root = Tk()
-   app = App(root, board)
+    root = Tk()
+    app = App(root, board)
 
-   def update_gui():
-      root.after(500, update_gui)
-      app.update()
+    def update_gui():
+        root.after(500, update_gui)
+        app.update()
 
-   root.after(0, update_gui)
-   root.mainloop()
+    root.after(0, update_gui)
+    root.mainloop()

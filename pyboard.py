@@ -205,9 +205,9 @@ def millis():
 def micros():
     """Returns the number of microseconds since the board was last reset.
 
-    The result is always a micropython smallint (31-bit signed number), so
-    after 2^30 microseconds (about 17.8 minutes) this will start to return
-    negative numbers.
+    The result is always a micropython smallint (31-bit signed
+    number), so after 2^30 microseconds (about 17.8 minutes) this will
+    start to return negative numbers.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
@@ -215,22 +215,26 @@ def micros():
 def elapsed_millis(start):
     """Returns the number of milliseconds which have elapsed since ``start``.
 
-    This function takes care of counter wrap, and always returns a positive
-    number. This means it can be used to measure periods upto about 12.4 days.
+    This function takes care of counter wrap, and always returns a
+    positive number. This means it can be used to measure periods upto
+    about 12.4 days.
 
     Example::
 
         start = pyb.millis()
         while pyb.elapsed_millis(start) < 1000:
             # Perform some operation
+            pass
     """
+    raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
 
 def elapsed_micros(start):
     """Returns the number of microseconds which have elapsed since ``start``.
 
-    This function takes care of counter wrap, and always returns a positive
-    number. This means it can be used to measure periods upto about 17.8 minutes.
+    This function takes care of counter wrap, and always returns a
+    positive number. This means it can be used to measure periods upto
+    about 17.8 minutes.
 
     Example::
 
@@ -243,8 +247,8 @@ def elapsed_micros(start):
 
 
 def hard_reset():
-    """Resets the pyboard in a manner similar to pushing the external RESET
-    button.
+    """Resets the pyboard in a manner similar to pushing the external
+    RESET button.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
@@ -256,19 +260,19 @@ def bootloader():
 
 def disable_irq():
     """Disable interrupt requests.
-    Returns the previous IRQ state: ``False``/``True`` for disabled/enabled IRQs
-    respectively.  This return value can be passed to enable_irq to restore
-    the IRQ to its original state.
+    Returns the previous IRQ state: ``False``/``True`` for
+    disabled/enabled IRQs respectively.  This return value can be
+    passed to enable_irq to restore the IRQ to its original state.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
 
 def enable_irq(state=True):
     """Enable interrupt requests.
-    If ``state`` is ``True`` (the default value) then IRQs are enabled.
-    If ``state`` is ``False`` then IRQs are disabled.  The most common use of
-    this function is to pass it the value returned by ``disable_irq`` to
-    exit a critical section.
+    If ``state`` is ``True`` (the default value) then IRQs are
+    enabled.  If ``state`` is ``False`` then IRQs are disabled.  The
+    most common use of this function is to pass it the value returned
+    by ``disable_irq`` to exit a critical section.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
@@ -291,7 +295,7 @@ def freq(sysclk=None, hclk=None, pclk1=None, pclk2=None):
     value will be selected.
 
     Supported sysclk frequencies are (in MHz): 8, 16, 24, 30, 32, 36,
-       40, 42, 48, 54, 56, 60, 64, 72, 84, 96, 108, 120, 144, 168.
+    40, 42, 48, 54, 56, 60, 64, 72, 84, 96, 108, 120, 144, 168.
 
     The maximum frequency of hclk is 168MHz, of pclk1 is 42MHz, and of
     pclk2 is 84MHz.  Be sure not to set frequencies above these
@@ -320,12 +324,11 @@ def freq(sysclk=None, hclk=None, pclk1=None, pclk2=None):
 def wfi():
     """Wait for an internal or external interrupt.
 
-       This executes a ``wfi`` instruction which reduces power
-       consumption of the MCU until any interrupt occurs (be it
-       internal or external), at which point execution continues.
-       Note that the system-tick interrupt occurs once every
-       millisecond (1000Hz) so this function will block for at most
-       1ms.
+    This executes a ``wfi`` instruction which reduces power
+    consumption of the MCU until any interrupt occurs (be it internal
+    or external), at which point execution continues.  Note that the
+    system-tick interrupt occurs once every millisecond (1000Hz) so
+    this function will block for at most 1ms.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
@@ -333,13 +336,13 @@ def wfi():
 def stop():
     """Put the pyboard in a "sleeping" state.
 
-       This reduces power consumption to less than 500 uA.  To wake
-       from this sleep state requires an external interrupt or a
-       real-time-clock event.  Upon waking execution continues where
-       it left off.
+    This reduces power consumption to less than 500 uA.  To wake from
+    this sleep state requires an external interrupt or a
+    real-time-clock event.  Upon waking execution continues where it
+    left off.
 
-       See :meth:`rtc.wakeup` to configure a real-time-clock wakeup
-       event.
+    See :meth:`rtc.wakeup` to configure a real-time-clock wakeup
+    event.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
@@ -347,13 +350,13 @@ def stop():
 def standby():
     """Put the pyboard into a "deep sleep" state.
 
-       This reduces power consumption to less than 50 uA.  To wake
-       from this sleep state requires a real-time-clock event, or an
-       external interrupt on X1 (PA0=WKUP) or X18 (PC13=TAMP1).  Upon
-       waking the system undergoes a hard reset.
+    This reduces power consumption to less than 50 uA.  To wake from
+    this sleep state requires a real-time-clock event, or an external
+    interrupt on X1 (PA0=WKUP) or X18 (PC13=TAMP1).  Upon waking the
+    system undergoes a hard reset.
 
-       See :meth:`rtc.wakeup` to configure a real-time-clock wakeup
-       event.
+    See :meth:`rtc.wakeup` to configure a real-time-clock wakeup
+    event.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
@@ -361,8 +364,8 @@ def standby():
 def have_cdc():
     """Return True if USB is connected as a serial device, False otherwise.
 
-       This function is deprecated.  Use pyb.USB_VCP().isconnected()
-       instead.
+    This function is deprecated.  Use pyb.USB_VCP().isconnected()
+    instead.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
@@ -385,7 +388,7 @@ def main(filename):
     """Set the filename of the main script to run after boot.py is
     finished.  If this function is not called then the default file
     main.py will be executed.
-    
+
     It only makes sense to call this function from within boot.py.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
@@ -393,37 +396,37 @@ def main(filename):
 
 def mount(device, mountpoint, *args, readonly=False, mkfs=False):
     """Mount a block device and make it available as part of the
-       filesystem.  ``device`` must be an object that provides the
-       block protocol:
+    filesystem.  ``device`` must be an object that provides the block
+    protocol:
 
-        - ``readblocks(self, blocknum, buf)``
-        - ``writeblocks(self, blocknum, buf)`` (optional)
-        - ``count(self)``
-        - ``sync(self)`` (optional)
+    - ``readblocks(self, blocknum, buf)``
+    - ``writeblocks(self, blocknum, buf)`` (optional)
+    - ``count(self)``
+    - ``sync(self)`` (optional)
 
-       ``readblocks`` and ``writeblocks`` should copy data between
-       ``buf`` and the block device, starting from block number
-       ``blocknum`` on the device.  ``buf`` will be a bytearray with
-       length a multiple of 512.  If ``writeblocks`` is not defined
-       then the device is mounted read-only.  The return value of
-       these two functions is ignored.
+    ``readblocks`` and ``writeblocks`` should copy data between
+    ``buf`` and the block device, starting from block number
+    ``blocknum`` on the device.  ``buf`` will be a bytearray with
+    length a multiple of 512.  If ``writeblocks`` is not defined
+    then the device is mounted read-only.  The return value of
+    these two functions is ignored.
 
-       ``count`` should return the number of blocks available on the
-       device.
-       ``sync``, if implemented, should sync the data on the device.
+    ``count`` should return the number of blocks available on the
+    device.
+    ``sync``, if implemented, should sync the data on the device.
 
-       The parameter ``mountpoint`` is the location in the root of the
-       filesystem to mount the device.  It must begin with a
-       forward-slash.
+    The parameter ``mountpoint`` is the location in the root of the
+    filesystem to mount the device.  It must begin with a
+    forward-slash.
 
-       If ``readonly`` is ``True``, then the device is mounted
-       read-only, otherwise it is mounted read-write.
+    If ``readonly`` is ``True``, then the device is mounted read-only,
+    otherwise it is mounted read-write.
 
-       If ``mkfs`` is ``True``, then a new filesystem is created if
-       one does not already exist.
+    If ``mkfs`` is ``True``, then a new filesystem is created if one
+    does not already exist.
 
-       To unmount a device, pass ``None`` as the device and the mount
-       location as ``mountpoint``.
+    To unmount a device, pass ``None`` as the device and the mount
+    location as ``mountpoint``.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
@@ -447,3 +450,4 @@ def unique_id():
     """Returns a string of 12 bytes (96 bits), which is the unique ID of
     the MCU.
     """
+    raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")

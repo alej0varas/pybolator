@@ -19,6 +19,6 @@ sw.callback(lambda:print('press!'))
 sw.callback(None)
 
 def f():
-   pyb.LED(1).toggle()
+    pyb.LED(1).toggle()
 
 sw.callback(f)
