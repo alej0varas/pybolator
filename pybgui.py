@@ -45,7 +45,7 @@ class App:
     def init_leds(self):
         Label(self.frame, text="leds").grid(row=BOARD_ROW, column=LEDS_COLUMN)
         count = BOARD_ROW + 1
-        for led in self.board.leds:
+        for led in self.board._leds:
             led_w = Button(
                 self.frame, background="white", state=DISABLED
             )
@@ -56,7 +56,7 @@ class App:
 
     def init_switch(self):
         def switch_push():
-            self.board.switch._down()
+            self.board._switch._down()
 
         Label(self.frame, text="switch").grid(row=BOARD_ROW, column=SWITCH_COLUMN)
         switch = Button(
