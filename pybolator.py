@@ -5,11 +5,18 @@ import pyboard
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--batch', action='store_true', default=False,
-                    help="Disable GUI and run main immediately")
+parser.add_argument('--batch', nargs='?', const=True, default=False,
+                    type=argparse.FileType('r'), help="""Disable GUI
+                    and run main immediately. If a file name is pased
+                    it is, used as a script""" )
+
 args = parser.parse_args()
 
-if not args.batch:
-    pybgui.main(pyboard)
+if args.batch:
+    script = None
+    if args.batch is not bool:
+        script = args.batch.read()
+    pyboard._main(script)
 else:
-    pyboard._main()
+    pybgui.main(pyboard)
+

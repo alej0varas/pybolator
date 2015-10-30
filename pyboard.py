@@ -104,7 +104,11 @@ class _Interpreter:
             self.update()
             time.sleep(.5)
 
-    def start(self, code):
+    def start(self, code, script=None):
+        if script is not None:
+            for line in script.split('\n'):
+                self.write(line)
+
         import threading
         self.thread = threading.Thread(target=self.target, args=(code, ))
         self.thread.start()
@@ -134,9 +138,9 @@ class _Interpreter:
 _interpreter = _Interpreter()
 
 
-def _main():
+def _main(script):
     code = _run_code()
-    _interpreter.start(code)
+    _interpreter.start(code, script)
 
 
 def _run_code():

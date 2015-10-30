@@ -4,6 +4,16 @@
 
 PyBoard emulator
 
+.. note:: very early development state
+
+Features
+========
+
+- Run any `main.py` script.
+- See what happens to the pyboard in the GUI or
+- Run in batch mode and optionally
+- Simulate hardware interaction from a script.
+
 Dependencies
 ============
 
@@ -16,9 +26,24 @@ Debian based distros::
 
 Run
 ~~~
+
+GUI
++++
 ::
 
-  $ PYBOLATOR_MAIN=path/to/your/main.py python3 pybolator.py
+  $ PYBOLATOR_MAIN=path/to/main.py python3 pybolator.py
+
+Batch
++++++
+::
+
+  $ PYBOLATOR_MAIN=path/to/main.py python3 pybolator.py --batch
+
+optionally pass a `pyb` script
+::
+
+  $ PYBOLATOR_MAIN=path/to/main.py python3 pybolator.py --batch tests/script.pyb
+
 
 Development
 ~~~~~~~~~~~
@@ -65,8 +90,8 @@ Methods
 - switch()
 - switch.callback(fun)
 
-Unsuported methods and classes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unsupported methods and classes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - udelay(us)
 - millis()
