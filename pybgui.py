@@ -16,30 +16,26 @@ class LED:
 
     def update(self):
         if self.obj.state:
-            sys.stderr.write('GUI:LED:ON\n')
             self.widget.config(background='blue')
         if not self.obj.state:
-            sys.stderr.write('GUI:LED:OFF\n')
             self.widget.config(background='white')
 
 
 class Switch:
 
-    def __init__(self, obj, widget):
+    def __init__(self, board, obj, widget):
+        self.board = board
         self.obj = obj
         self.widget = widget
         self.widget.bind("<Button-1>", self.press_command)
         self.widget.bind("<ButtonRelease-1>", self.release_command)
 
-    def update(self):
-        if self.obj.pressed:
-            self.obj.callable()
-
     def press_command(self, event):
-        self.obj._press()
+        self.board._interpreter.write("switch:press")
 
     def release_command(self, event):
-        self.obj._release()
+        self.board._interpreter.write("switch:release")
+
 
 class App:
 
@@ -77,16 +73,16 @@ class App:
         label.grid(row=BOARD_ROW, column=SWITCH_COLUMN)
         switch_w = Button(self.frame, background="black")
         switch_w.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN)
-        switch = Switch(self.board._switch, switch_w)
+        switch = Switch(self.board, self.board._switch, switch_w)
         self.switch = switch
 
     def run_code(self):
-        self.board._run_code()
+        self.board._main()
+        # self.load_script()
 
     def update(self):
         for led in self.leds:
             led.update()
-        self.switch.update()
 
 
 def main(board):

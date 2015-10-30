@@ -12,4 +12,4 @@ args = parser.parse_args()
 if not args.batch:
     pybgui.main(pyboard)
 else:
-    pyboard._run_code()
+    pyboard._main()

@@ -77,14 +77,66 @@ class _Switch:
         sys.stderr.write("SWITCH:\n")
         sys.stderr.write("\t pressed\n")
 
-
     def _release(self):
         self.pressed = False
 
         sys.stderr.write("SWITCH:\n")
         sys.stderr.write("\t released\n")
 
+    def _update(self):
+        if self.pressed:
+            self.callable()
+
+
 _switch = _Switch()
+
+
+class _Interpreter:
+
+    commands = []
+
+    def target(self, code):
+        import time
+        while code.is_alive():
+            command = self.read()
+            if command:
+                self.exec(command)
+            self.update()
+            time.sleep(.5)
+
+    def start(self, code):
+        import threading
+        self.thread = threading.Thread(target=self.target, args=(code, ))
+        self.thread.start()
+
+    def update(self):
+        _switch._update()
+
+    def read(self):
+        sys.stderr.write("INT:read\n")
+        if len(self.commands):
+            command = self.commands.pop()
+            return command
+
+    def write(self, command):
+        self.commands.insert(0, command)
+
+    def exec(self, command):
+        sys.stderr.write("INT:exec\n")
+
+        if command == "switch:press":
+            _switch._press()
+        elif command == "switch:release":
+            _switch._release()
+
+
+
+_interpreter = _Interpreter()
+
+
+def _main():
+    code = _run_code()
+    _interpreter.start(code)
 
 
 def _run_code():
@@ -97,6 +149,7 @@ def _run_code():
     import threading
     thread = threading.Thread(target=target)
     thread.start()
+    return thread
 
 
 ### pyb method and classes
