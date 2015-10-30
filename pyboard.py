@@ -138,7 +138,7 @@ class _Interpreter:
 _interpreter = _Interpreter()
 
 
-def _main(script):
+def _main(script=None):
     code = _run_code()
     _interpreter.start(code, script)
 
