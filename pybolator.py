@@ -14,7 +14,7 @@ args = parser.parse_args()
 
 if args.batch:
     script = None
-    if args.batch is not bool:
+    if not isinstance(args.batch, bool):
         script = args.batch.read()
     pyboard._main(script)
 else:
