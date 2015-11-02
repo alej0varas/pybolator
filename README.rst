@@ -76,10 +76,10 @@ Class pyb.LED
 Methods
 #######
 
-- led.intensity([value])*
-- led.off()*
-- led.on()*
-- led.toggle()*
+- led.intensity([value])
+- led.off()
+- led.on()
+- led.toggle()
 
 Class pyb.Switch
 ++++++++++++++++
@@ -142,15 +142,6 @@ Methods
 - accel.filtered_xyz()
 - accel.tilt()
 - accel.z()
-
-Class pyb.Switch
-++++++++++++++++
-
-Methods
-#######
-
-- switch()
-- switch.callback(fun)
 
 Class pyb.ADC
 +++++++++++++

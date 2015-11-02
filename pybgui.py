@@ -15,10 +15,12 @@ class LED:
         self.widget = widget
 
     def update(self):
-        if self.obj.state:
-            self.widget.config(background='blue')
-        if not self.obj.state:
-            self.widget.config(background='white')
+        background='white'
+        if self.obj._intensity:
+            background = self.obj._color
+        text = '%03d' % self.obj._intensity
+
+        self.widget.config(text=text, background=background)
 
 
 class Switch:
@@ -60,9 +62,8 @@ class App:
         Label(self.frame, text="leds").grid(row=BOARD_ROW, column=LEDS_COLUMN)
         count = BOARD_ROW + 1
         for led in self.board._leds:
-            led_w = Button(
-                self.frame, background="white", state=DISABLED
-            )
+            led_w = Button(self.frame, background="white", state=DISABLED,
+                           foreground="black")
             led_w.grid(row=count, column=LEDS_COLUMN)
             count += 1
             led = LED(led, led_w)

@@ -3,7 +3,7 @@ from time import sleep
 import sys
 
 
-_LEDS_AMOUNT = 4
+_LEDS = ["blue", "orange", "green", "red"]
 
 
 class _Accel:
@@ -24,35 +24,40 @@ _accel = _Accel()
 
 
 class _LED:
+    _INTENSITY_MAX = 255
+    _INTENSITY_MIN = 0
 
-    state = False
-    intensity_value = 0
+    _intensity = 0
 
     def __init__(self, led):
-        self.led = led
+        self._id = led
+        self._color = _LEDS[self._id]
 
     def on(self):
-        self.state = True
-        sys.stderr.write("LED %s:\n" % self.led)
+        self._intensity = _LED._INTENSITY_MAX
+        sys.stderr.write("LED %s:\n" % self._id)
         sys.stderr.write("\t on\n")
 
     def off(self):
-        self.state = False
-        sys.stderr.write("LED %s:\n" % self.led)
+        self._intensity = _LED._INTENSITY_MIN
+        sys.stderr.write("LED %s:\n" % self._id)
         sys.stderr.write("\t off\n")
 
     def toggle(self):
-        if self.state:
-            return self.off()
-        return self.on()
+        if self._intensity == _LED._INTENSITY_MIN:
+            return self.on()
+        return self.off()
 
-    def intensity(self, value):
-        self.intensity_value = value
-        sys.stderr.write("LED %s:\n" % self.led)
-        sys.stderr.write("\t intensity %s\n" % self.intensity_value)
+    def intensity(self, value=None):
+        if value is None:
+            return self._intensity
+
+        self._intensity = value
+        sys.stderr.write("LED %s:\n" % self._id)
+        sys.stderr.write("\t intensity %s\n" % self._intensity)
 
 
-_leds = [_LED(i) for i in range(_LEDS_AMOUNT)]
+_leds = [_LED(i) for i in range(len(_LEDS))]
 
 
 class _Switch:
