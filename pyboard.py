@@ -1,6 +1,10 @@
+from datetime import datetime, timedelta
 from random import randint
 from time import sleep
 import sys
+
+
+_boot_time = datetime.now()
 
 
 _LEDS = ["blue", "orange", "green", "red"]
@@ -161,7 +165,9 @@ def _run_code():
     return thread
 
 
-### pyb method and classes
+#
+# pyb method and classes
+#
 
 def Accel():
     return _accel
@@ -248,69 +254,57 @@ def Switch():
     return _switch
 
 
-def delay(miliseconds):
+#
+# Time related functions
+#
+
+def delay(milliseconds):
     sys.stderr.write("PYB:\n")
-    sys.stderr.write("\tdelay %s\n" % miliseconds)
-    sleep(miliseconds / 1000)
+    sys.stderr.write("\tdelay %s\n" % milliseconds)
+    sleep(milliseconds / 1000)
 
 
 def udelay(us):
-    """Delay for the given number of microseconds."""
-    raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
+    sys.stderr.write("PYB:\n")
+    sys.stderr.write("\tudelay %s\n" % us)
+    sleep(us / 1000000)
 
 
 def millis():
-    """Returns the number of milliseconds since the board was last reset.
+    result = micros() / 1000
 
-    The result is always a micropython smallint (31-bit signed number), so
-    after 2^30 milliseconds (about 12.4 days) this will start to return
-    negative numbers.
-    """
-    raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
+    sys.stderr.write("PYB:\n")
+    sys.stderr.write("\tmillis %s\n" % result)
+
+    return result
 
 
 def micros():
-    """Returns the number of microseconds since the board was last reset.
+    delta = datetime.now() - _boot_time
+    result = delta.total_seconds() * 1000000
 
-    The result is always a micropython smallint (31-bit signed
-    number), so after 2^30 microseconds (about 17.8 minutes) this will
-    start to return negative numbers.
-    """
-    raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
+    sys.stderr.write("PYB:\n")
+    sys.stderr.write("\tmicros %s\n" % result)
+
+    return result
 
 
 def elapsed_millis(start):
-    """Returns the number of milliseconds which have elapsed since ``start``.
+    result = elapsed_micros(start) / 1000
 
-    This function takes care of counter wrap, and always returns a
-    positive number. This means it can be used to measure periods upto
-    about 12.4 days.
+    sys.stderr.write("PYB:\n")
+    sys.stderr.write("\telapsed_millis %s\n" % result)
 
-    Example::
-
-        start = pyb.millis()
-        while pyb.elapsed_millis(start) < 1000:
-            # Perform some operation
-            pass
-    """
-    raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
+    return result
 
 
 def elapsed_micros(start):
-    """Returns the number of microseconds which have elapsed since ``start``.
+    result = micros() - start
 
-    This function takes care of counter wrap, and always returns a
-    positive number. This means it can be used to measure periods upto
-    about 17.8 minutes.
+    sys.stderr.write("PYB:\n")
+    sys.stderr.write("\telapsed_micros %s\n" % result)
 
-    Example::
-
-        start = pyb.micros()
-        while pyb.elapsed_micros(start) < 1000:
-            # Perform some operation
-            pass
-    """
-    raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
+    return result
 
 
 def hard_reset():

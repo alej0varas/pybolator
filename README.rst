@@ -60,6 +60,11 @@ Time related functions
 ++++++++++++++++++++++
 
 - delay(ms)
+- udelay(us)
+- millis()
+- micros()
+- elapsed_millis(start)
+- elapsed_micros(start)
 
 Class pyb.Accel
 +++++++++++++++
@@ -92,12 +97,6 @@ Methods
 
 Unsupported methods and classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-- udelay(us)
-- millis()
-- micros()
-- elapsed_millis(start)
-- elapsed_micros(start)
 
 Reset related functions
 +++++++++++++++++++++++
