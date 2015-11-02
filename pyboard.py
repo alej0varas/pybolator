@@ -1,13 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from random import randint
 from time import sleep
 import sys
-
-
-_boot_time = datetime.now()
-
-
-_LEDS = ["blue", "orange", "green", "red"]
 
 
 class _Accel:
@@ -23,8 +17,6 @@ class _Accel:
         sys.stderr.write("\ty\n")
 
         return randint(0, 10)
-
-_accel = _Accel()
 
 
 class _LED:
@@ -61,43 +53,40 @@ class _LED:
         sys.stderr.write("\t intensity %s\n" % self._intensity)
 
 
-_leds = [_LED(i) for i in range(len(_LEDS))]
-
-
 class _Switch:
 
-    pressed = False
-    callable = None
+    _pressed = False
+
+    def __init__(self, name, callable=None):
+        self._name = name
+        self._callable = callable
 
     def __call__(self):
-        sys.stderr.write("SWITCH:\n")
-        sys.stderr.write("\t call > %s\n" % self.pressed)
+        sys.stderr.write("SWITCH %s:\n" % self._name)
+        sys.stderr.write("\t call > %s\n" % self._pressed)
 
-        return self.pressed
+        return self._pressed
 
     def callback(self, callable):
-        self.callable = callable
-        sys.stderr.write("SWITCH:\n")
-        sys.stderr.write("\t callback %s\n" % self.callable)
+        self._callable = callable
+        sys.stderr.write("SWITCH %s:\n" % self._name)
+        sys.stderr.write("\t callback %s\n" % self._callable)
 
     def _press(self):
-        self.pressed = True
+        self._pressed = True
 
-        sys.stderr.write("SWITCH:\n")
+        sys.stderr.write("SWITCH %s:\n" % self._name)
         sys.stderr.write("\t pressed\n")
 
     def _release(self):
-        self.pressed = False
+        self._pressed = False
 
-        sys.stderr.write("SWITCH:\n")
+        sys.stderr.write("SWITCH %s:\n" % self._name)
         sys.stderr.write("\t released\n")
 
     def _update(self):
-        if self.pressed:
-            self.callable()
-
-
-_switch = _Switch()
+        if self._pressed and self._callable is not None:
+            self._callable()
 
 
 class _Interpreter:
@@ -123,7 +112,8 @@ class _Interpreter:
         self.thread.start()
 
     def update(self):
-        _switch._update()
+        _user_switch._update()
+        _reset_switch._update()
 
     def read(self):
         sys.stderr.write("INT:read\n")
@@ -137,10 +127,14 @@ class _Interpreter:
     def exec(self, command):
         sys.stderr.write("INT:exec\n")
 
-        if command == "switch:press":
-            _switch._press()
-        elif command == "switch:release":
-            _switch._release()
+        if command == "user-switch:press":
+            _user_switch._press()
+        elif command == "user-switch:release":
+            _user_switch._release()
+        if command == "reset-switch:press":
+            _reset_switch._press()
+        elif command == "reset-switch:release":
+            _reset_switch._release()
 
 
 
@@ -251,8 +245,7 @@ def USB_VCP():
 
 
 def Switch():
-    return _switch
-
+    return _user_switch
 
 #
 # Time related functions
@@ -512,3 +505,12 @@ def unique_id():
     the MCU.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
+
+
+_LEDS = ["blue", "orange", "green", "red"]
+
+_boot_time = datetime.now()
+_accel = _Accel()
+_leds = [_LED(i) for i in range(len(_LEDS))]
+_user_switch = _Switch('user')
+_reset_switch = _Switch('reset', hard_reset)

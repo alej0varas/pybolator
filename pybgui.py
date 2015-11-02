@@ -33,10 +33,10 @@ class Switch:
         self.widget.bind("<ButtonRelease-1>", self.release_command)
 
     def press_command(self, event):
-        self.board._interpreter.write("switch:press")
+        self.board._interpreter.write("%s-switch:press" % self.obj._name)
 
     def release_command(self, event):
-        self.board._interpreter.write("switch:release")
+        self.board._interpreter.write("%s-switch:release" % self.obj._name)
 
 
 class App:
@@ -46,12 +46,11 @@ class App:
         self.frame.pack()
         self.board = board
         self.leds = []
-        self.switch = None
         self.init()
 
     def init(self):
         self.init_leds()
-        self.init_switch()
+        self.init_switches()
 
         b0 = Button(
             self.frame, text="RUN!", background="green", command=self.run_code
@@ -59,7 +58,7 @@ class App:
         b0.grid(row=CONTROL_ROW, column=0)
 
     def init_leds(self):
-        Label(self.frame, text="leds").grid(row=BOARD_ROW, column=LEDS_COLUMN)
+        Label(self.frame, text="Leds").grid(row=BOARD_ROW, column=LEDS_COLUMN)
         count = BOARD_ROW + 1
         for led in self.board._leds:
             led_w = Button(self.frame, background="white", state=DISABLED,
@@ -69,13 +68,20 @@ class App:
             led = LED(led, led_w)
             self.leds.append(led)
 
-    def init_switch(self):
-        label = Label(self.frame, text="switch")
+    def init_switches(self):
+        label = Label(self.frame, text="Switches")
         label.grid(row=BOARD_ROW, column=SWITCH_COLUMN)
+
+        # user switch
         switch_w = Button(self.frame, background="black")
         switch_w.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN)
-        switch = Switch(self.board, self.board._switch, switch_w)
-        self.switch = switch
+        Switch(self.board, self.board._user_switch, switch_w)
+
+        # reset switch
+        switch_w = Button(self.frame, background="black", foreground='white',
+                          text="reset")
+        switch_w.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN + 1)
+        Switch(self.board, self.board._reset_switch, switch_w)
 
     def run_code(self):
         self.board._main()
