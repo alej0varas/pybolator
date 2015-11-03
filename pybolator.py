@@ -12,11 +12,13 @@ parser.add_argument('--batch', nargs='?', const=True, default=False,
 
 args = parser.parse_args()
 
+board = pyboard._board
+
 if args.batch:
     script = None
     if not isinstance(args.batch, bool):
         script = args.batch.read()
-    pyboard._main(script)
+    board.main(script)
 else:
-    pybgui.main(pyboard)
+    pybgui.main(board)
 

@@ -4,6 +4,96 @@ from time import sleep
 import sys
 
 
+class _Board:
+
+    LEDS = ["blue", "orange", "green", "red"]
+
+    def __init__(self):
+        self.boot_time = datetime.now()
+        self.accel = _Accel()
+        self.leds = [_LED(i) for i in range(len(self.LEDS))]
+        self.user_switch = _Switch('user')
+        self.reset_switch = _Switch('reset', hard_reset)
+
+
+    def main(self, pyb_script=None, keep_interpreter_running=False):
+        self.keep_interpreter_running = keep_interpreter_running
+
+        self.user_script_thread = self.prepare_user_script()
+        self.interpreter = _Interpreter(self.user_script_thread, pyb_script)
+
+        self.interpreter.thread.start()
+        self.user_script_thread.start()
+
+    def prepare_user_script(self):
+        def target():
+            import os
+            MAIN_FILENAME = os.environ.get("PYBOLATOR_MAIN", "main.py")
+            main_file = open(MAIN_FILENAME, 'r')
+            content = main_file.read()
+            main_file.close()
+
+            obj = compile(content, MAIN_FILENAME, 'exec')
+            exec(obj, globals())
+
+        import threading
+        thread = threading.Thread(target=target)
+        return thread
+
+    def stop(self):
+        self.interpreter.stop()
+
+
+class _Interpreter:
+
+    commands = []
+
+    def __init__(self, code, script=None):
+        if script is not None:
+            for line in script.split('\n'):
+                self.write(line)
+
+        import threading
+        self.thread = threading.Thread(target=self.target, args=(code, ))
+
+    def target(self, code):
+        import time
+        while code.is_alive() or _board.keep_interpreter_running:
+            command = self.read()
+            if command:
+                self.exec(command)
+            self.update()
+            time.sleep(.5)
+
+    def stop(self):
+        _board.keep_interpreter_running = False
+
+    def update(self):
+        _board.user_switch._update()
+        _board.reset_switch._update()
+
+    def read(self):
+        sys.stderr.write("INT:read\n")
+        if len(self.commands):
+            command = self.commands.pop()
+            return command
+
+    def write(self, command):
+        self.commands.insert(0, command)
+
+    def exec(self, command):
+        sys.stderr.write("INT:exec\n")
+
+        if command == "user-switch:press":
+            _board.user_switch._press()
+        elif command == "user-switch:release":
+            _board.user_switch._release()
+        if command == "reset-switch:press":
+            _board.reset_switch._press()
+        elif command == "reset-switch:release":
+            _board.reset_switch._release()
+
+
 class _Accel:
 
     def x(self):
@@ -27,7 +117,7 @@ class _LED:
 
     def __init__(self, led):
         self._id = led
-        self._color = _LEDS[self._id]
+        self._color = _Board.LEDS[self._id]
 
     def on(self):
         self._intensity = _LED._INTENSITY_MAX
@@ -89,82 +179,12 @@ class _Switch:
             self._callable()
 
 
-class _Interpreter:
-
-    commands = []
-
-    def target(self, code):
-        import time
-        while code.is_alive():
-            command = self.read()
-            if command:
-                self.exec(command)
-            self.update()
-            time.sleep(.5)
-
-    def start(self, code, script=None):
-        if script is not None:
-            for line in script.split('\n'):
-                self.write(line)
-
-        import threading
-        self.thread = threading.Thread(target=self.target, args=(code, ))
-        self.thread.start()
-
-    def update(self):
-        _user_switch._update()
-        _reset_switch._update()
-
-    def read(self):
-        sys.stderr.write("INT:read\n")
-        if len(self.commands):
-            command = self.commands.pop()
-            return command
-
-    def write(self, command):
-        self.commands.insert(0, command)
-
-    def exec(self, command):
-        sys.stderr.write("INT:exec\n")
-
-        if command == "user-switch:press":
-            _user_switch._press()
-        elif command == "user-switch:release":
-            _user_switch._release()
-        if command == "reset-switch:press":
-            _reset_switch._press()
-        elif command == "reset-switch:release":
-            _reset_switch._release()
-
-
-
-_interpreter = _Interpreter()
-
-
-def _main(script=None):
-    code = _run_code()
-    _interpreter.start(code, script)
-
-
-def _run_code():
-    def target():
-        import os
-        MAIN_FILENAME = os.environ.get("PYBOLATOR_MAIN", "main.py")
-        obj = compile(open(MAIN_FILENAME).read(), MAIN_FILENAME, 'exec')
-        exec(obj, globals())
-
-    import threading
-    thread = threading.Thread(target=target)
-    thread.start()
-    return thread
-
-
 #
 # pyb method and classes
 #
 
 def Accel():
-    return _accel
+    return _board.accel
 
 
 def ADC(pin):
@@ -203,7 +223,7 @@ def LCD(skin_position):
 
 
 def LED(number):
-    return _leds[number - 1]
+    return _board.leds[number - 1]
 
 
 def Pin(id):
@@ -245,7 +265,7 @@ def USB_VCP():
 
 
 def Switch():
-    return _user_switch
+    return _board.user_switch
 
 #
 # Time related functions
@@ -273,7 +293,7 @@ def millis():
 
 
 def micros():
-    delta = datetime.now() - _boot_time
+    delta = datetime.now() - _board.boot_time
     result = delta.total_seconds() * 1000000
 
     sys.stderr.write("PYB:\n")
@@ -506,11 +526,4 @@ def unique_id():
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
 
-
-_LEDS = ["blue", "orange", "green", "red"]
-
-_boot_time = datetime.now()
-_accel = _Accel()
-_leds = [_LED(i) for i in range(len(_LEDS))]
-_user_switch = _Switch('user')
-_reset_switch = _Switch('reset', hard_reset)
+_board = _Board()

@@ -1,5 +1,3 @@
-import sys
-
 from tkinter import Button, DISABLED, Frame, Label, Tk
 
 CONTROL_ROW = 0
@@ -33,10 +31,10 @@ class Switch:
         self.widget.bind("<ButtonRelease-1>", self.release_command)
 
     def press_command(self, event):
-        self.board._interpreter.write("%s-switch:press" % self.obj._name)
+        self.board.interpreter.write("%s-switch:press" % self.obj._name)
 
     def release_command(self, event):
-        self.board._interpreter.write("%s-switch:release" % self.obj._name)
+        self.board.interpreter.write("%s-switch:release" % self.obj._name)
 
 
 class App:
@@ -53,14 +51,14 @@ class App:
         self.init_switches()
 
         b0 = Button(
-            self.frame, text="RUN!", background="green", command=self.run_code
+            self.frame, text="ON!", background="green", command=self.run_user_code
         )
         b0.grid(row=CONTROL_ROW, column=0)
 
     def init_leds(self):
         Label(self.frame, text="Leds").grid(row=BOARD_ROW, column=LEDS_COLUMN)
         count = BOARD_ROW + 1
-        for led in self.board._leds:
+        for led in self.board.leds:
             led_w = Button(self.frame, background="white", state=DISABLED,
                            foreground="black")
             led_w.grid(row=count, column=LEDS_COLUMN)
@@ -75,16 +73,16 @@ class App:
         # user switch
         switch_w = Button(self.frame, background="black")
         switch_w.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN)
-        Switch(self.board, self.board._user_switch, switch_w)
+        Switch(self.board, self.board.user_switch, switch_w)
 
         # reset switch
         switch_w = Button(self.frame, background="black", foreground='white',
                           text="reset")
         switch_w.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN + 1)
-        Switch(self.board, self.board._reset_switch, switch_w)
+        Switch(self.board, self.board.reset_switch, switch_w)
 
-    def run_code(self):
-        self.board._main()
+    def run_user_code(self):
+        self.board.main(keep_interpreter_running=True)
         # self.load_script()
 
     def update(self):
@@ -102,3 +100,5 @@ def main(board):
 
     root.after(0, update_gui)
     root.mainloop()
+
+    board.stop()
