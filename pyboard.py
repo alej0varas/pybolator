@@ -6,15 +6,41 @@ import sys
 
 class _Board:
 
-    LEDS = ["blue", "orange", "green", "red"]
+    leds = {}
 
-    def __init__(self):
+    def init(self, hardware):
+        self.hardware = hardware
         self.boot_time = datetime.now()
-        self.accel = _Accel()
-        self.leds = [_LED(i) for i in range(len(self.LEDS))]
-        self.user_switch = _Switch('user')
-        self.reset_switch = _Switch('reset', hard_reset)
 
+        self.set_accel()
+        self.set_leds()
+        self.set_reset()
+        self.set_switch()
+
+    def set_accel(self):
+        accel = self.hardware.get("accel")
+        if accel is not None:
+            self.accel = _Accel()
+
+    def set_leds(self):
+        leds = self.hardware.get("LEDS")
+        if leds is not None:
+            _LED._intensity_min = leds["intensity_min"]
+            _LED._intensity_max = leds["intensity_max"]
+            c = 1
+            for color in leds["items"]:
+                self.leds[c] = _LED(color)
+                c += 1
+
+    def set_reset(self):
+        switch = self.hardware.get("reset")
+        if switch is not None:
+            self.reset = _Switch('reset', hard_reset)
+
+    def set_switch(self):
+        switch = self.hardware.get("switch")
+        if switch is not None:
+            self.switch = _Switch('user')
 
     def main(self, pyb_script=None, keep_interpreter_running=False):
         self.keep_interpreter_running = keep_interpreter_running
@@ -69,8 +95,8 @@ class _Interpreter:
         _board.keep_interpreter_running = False
 
     def update(self):
-        _board.user_switch._update()
-        _board.reset_switch._update()
+        _board.switch._update()
+        _board.reset._update()
 
     def read(self):
         sys.stderr.write("INT:read\n")
@@ -85,13 +111,13 @@ class _Interpreter:
         sys.stderr.write("INT:exec\n")
 
         if command == "user-switch:press":
-            _board.user_switch._press()
+            _board.switch._press()
         elif command == "user-switch:release":
-            _board.user_switch._release()
+            _board.switch._release()
         if command == "reset-switch:press":
-            _board.reset_switch._press()
+            _board.reset._press()
         elif command == "reset-switch:release":
-            _board.reset_switch._release()
+            _board.reset._release()
 
 
 class _Accel:
@@ -109,28 +135,25 @@ class _Accel:
         return randint(0, 10)
 
 
+
 class _LED:
-    _INTENSITY_MAX = 255
-    _INTENSITY_MIN = 0
 
-    _intensity = 0
-
-    def __init__(self, led):
-        self._id = led
-        self._color = _Board.LEDS[self._id]
+    def __init__(self, color):
+        self._intensity = 0
+        self._color = color
 
     def on(self):
-        self._intensity = _LED._INTENSITY_MAX
-        sys.stderr.write("LED %s:\n" % self._id)
+        self._intensity = self._intensity_max
+        sys.stderr.write("LED %s:\n" % self._color)
         sys.stderr.write("\t on\n")
 
     def off(self):
-        self._intensity = _LED._INTENSITY_MIN
-        sys.stderr.write("LED %s:\n" % self._id)
+        self._intensity = self._intensity_min
+        sys.stderr.write("LED %s:\n" % self._color)
         sys.stderr.write("\t off\n")
 
     def toggle(self):
-        if self._intensity == _LED._INTENSITY_MIN:
+        if self._intensity == self._intensity_min:
             return self.on()
         return self.off()
 
@@ -139,7 +162,7 @@ class _LED:
             return self._intensity
 
         self._intensity = value
-        sys.stderr.write("LED %s:\n" % self._id)
+        sys.stderr.write("LED %s:\n" % self._color)
         sys.stderr.write("\t intensity %s\n" % self._intensity)
 
 
@@ -223,7 +246,7 @@ def LCD(skin_position):
 
 
 def LED(number):
-    return _board.leds[number - 1]
+    return _board.leds[number]
 
 
 def Pin(id):
@@ -265,7 +288,7 @@ def USB_VCP():
 
 
 def Switch():
-    return _board.user_switch
+    return _board.switch
 
 #
 # Time related functions
@@ -525,5 +548,6 @@ def unique_id():
     the MCU.
     """
     raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
+
 
 _board = _Board()

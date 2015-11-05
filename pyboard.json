@@ -1,0 +1,13 @@
+{
+    "accel": true,
+
+    "LEDS": {
+	"items": ["blue", "orange", "green", "red"],
+	"intensity_min": 0,
+	"intensity_max": 255
+    },
+
+    "reset": true,
+
+    "switch": true
+}

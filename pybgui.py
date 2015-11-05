@@ -58,7 +58,7 @@ class App:
     def init_leds(self):
         Label(self.frame, text="Leds").grid(row=BOARD_ROW, column=LEDS_COLUMN)
         count = BOARD_ROW + 1
-        for led in self.board.leds:
+        for led in self.board.leds.values():
             led_w = Button(self.frame, background="white", state=DISABLED,
                            foreground="black")
             led_w.grid(row=count, column=LEDS_COLUMN)
@@ -73,13 +73,13 @@ class App:
         # user switch
         switch_w = Button(self.frame, background="black")
         switch_w.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN)
-        Switch(self.board, self.board.user_switch, switch_w)
+        Switch(self.board, self.board.switch, switch_w)
 
         # reset switch
         switch_w = Button(self.frame, background="black", foreground='white',
                           text="reset")
         switch_w.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN + 1)
-        Switch(self.board, self.board.reset_switch, switch_w)
+        Switch(self.board, self.board.reset, switch_w)
 
     def run_user_code(self):
         self.board.main(keep_interpreter_running=True)

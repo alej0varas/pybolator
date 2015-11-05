@@ -1,4 +1,5 @@
 import argparse
+import json
 
 import pybgui
 import pyboard
@@ -10,15 +11,21 @@ parser.add_argument('--batch', nargs='?', const=True, default=False,
                     and run main immediately. If a file name is pased
                     it is, used as a script""" )
 
+parser.add_argument('--hardware', type=argparse.FileType('r'),
+                    default='pyboard.json', help="""Load a hardware
+                    definition from a hardware file""" )
+
+
 args = parser.parse_args()
 
-board = pyboard._board
+pyboard._board.init(json.loads(args.hardware.read()))
+
 
 if args.batch:
     script = None
     if not isinstance(args.batch, bool):
         script = args.batch.read()
-    board.main(script)
+    pyboard._board.main(script)
 else:
-    pybgui.main(board)
+    pybgui.main(pyboard._board)
 
