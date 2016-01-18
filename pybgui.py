@@ -51,9 +51,13 @@ class App:
         self.init_switches()
 
         b0 = Button(
-            self.frame, text="ON!", background="green", command=self.run_user_code
+            self.frame, text="ON!", background="green", command=self.board.main
         )
         b0.grid(row=CONTROL_ROW, column=0)
+        b1 = Button(
+            self.frame, text="OFF!", background="red", command=self.board.stop
+        )
+        b1.grid(row=CONTROL_ROW, column=1)
 
     def init_leds(self):
         Label(self.frame, text="Leds").grid(row=BOARD_ROW, column=LEDS_COLUMN)
@@ -80,10 +84,6 @@ class App:
                           text="reset")
         switch_w.grid(row=BOARD_ROW + 1, column=SWITCH_COLUMN + 1)
         Switch(self.board, self.board.reset, switch_w)
-
-    def run_user_code(self):
-        self.board.main(keep_interpreter_running=True)
-        # self.load_script()
 
     def update(self):
         for led in self.leds:

@@ -1,7 +1,13 @@
 from datetime import datetime
 from random import randint
 from time import sleep
+import bdb
+import threading
+import os
 import sys
+
+
+MAIN_FILENAME = os.environ.get("PYBOLATOR_MAIN", "main.py")
 
 
 class _Board:
@@ -42,54 +48,53 @@ class _Board:
         if switch is not None:
             self.switch = _Switch('user')
 
-    def main(self, pyb_script=None, keep_interpreter_running=False):
-        self.keep_interpreter_running = keep_interpreter_running
+    def main(self, pyb_script=None):
+        self.reboot()
+        self.user_script_runner = _Runner(glo=globals())
+        self.user_script_runner.start()
 
-        self.user_script_thread = self.prepare_user_script()
-        self.interpreter = _Interpreter(self.user_script_thread, pyb_script)
+        self.interpreter = _Interpreter(pyb_script)
+        self.interpreter.start()
 
-        self.interpreter.thread.start()
-        self.user_script_thread.start()
+    def stop_user_script(self):
+        self.keep_user_script_running = False
 
-    def prepare_user_script(self):
-        def target():
-            import os
-            MAIN_FILENAME = os.environ.get("PYBOLATOR_MAIN", "main.py")
-            main_file = open(MAIN_FILENAME, 'r')
-            content = main_file.read()
-            main_file.close()
-
-            obj = compile(content, MAIN_FILENAME, 'exec')
-            exec(obj, globals())
-
-        import threading
-        thread = threading.Thread(target=target)
-        return thread
+    def stop_interpreter(self):
+        self.interpreter.stop()
 
     def stop(self):
-        self.interpreter.stop()
+        self.stop_interpreter()
+        self.stop_user_script()
+
+    def reboot(self):
+        self.keep_interpreter_running = True
+        self.keep_user_script_running = True
+        self.runner = _Runner()
+
 
 
 class _Interpreter:
 
     commands = []
 
-    def __init__(self, code, script=None):
+    def __init__(self, script=None):
         if script is not None:
             for line in script.split('\n'):
                 self.write(line)
 
-        import threading
-        self.thread = threading.Thread(target=self.target, args=(code, ))
+        self.thread = threading.Thread(target=self.target)
 
-    def target(self, code):
+    def target(self):
         import time
-        while code.is_alive() or _board.keep_interpreter_running:
+        while _board.keep_interpreter_running:
             command = self.read()
             if command:
                 self.exec(command)
             self.update()
             time.sleep(.5)
+
+    def start(self):
+        self.thread.start()
 
     def stop(self):
         _board.keep_interpreter_running = False
@@ -108,8 +113,11 @@ class _Interpreter:
         self.commands.insert(0, command)
 
     def exec(self, command):
-        sys.stderr.write("INT:exec\n")
+        sys.stderr.write("INT:exec, %s \n" % command)
 
+        if command == "sleep":
+            sys.stderr.write("INT:sleeping!!!")
+            sleep(1)
         if command == "user-switch:press":
             _board.switch._press()
         elif command == "user-switch:release":
@@ -118,6 +126,38 @@ class _Interpreter:
             _board.reset._press()
         elif command == "reset-switch:release":
             _board.reset._release()
+
+
+class _Runner:
+
+    class CPU(bdb.Bdb):
+
+        def user_line(self, frame):
+            # Stop running user code
+            if not self.board.keep_user_script_running:
+                raise bdb.BdbQuit
+            # print('FRAME: ', frame.f_code)
+
+    def __init__(self, glo=None):
+        self.globals = glo
+        self.thread = threading.Thread(target=self.target_bdb,
+                                       args=(MAIN_FILENAME,))
+
+    def target_bdb(self, main_filename):
+        with open(main_filename) as f:
+            statement = 'exec(%r)' % f.read()
+
+        statement += '\nimport time\nwhile _board.keep_user_script_running: time.sleep(1)'
+
+        cpu = self.CPU()
+        cpu.board = self.globals['_board']
+        cpu.run(statement, self.globals)
+
+    def is_alive(self):
+        return self.thread.is_alive()
+
+    def start(self):
+        self.thread.start()
 
 
 class _Accel:
