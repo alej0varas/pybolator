@@ -40,6 +40,8 @@ class Switch:
 class App:
 
     def __init__(self, master, board):
+        self.board_is_running = False
+
         self.frame = Frame(master)
         self.frame.pack()
         self.board = board
@@ -51,13 +53,22 @@ class App:
         self.init_switches()
 
         b0 = Button(
-            self.frame, text="ON!", background="green", command=self.board.main
+            self.frame, text="ON!", background="green", command=self.boot_board
         )
         b0.grid(row=CONTROL_ROW, column=0)
         b1 = Button(
-            self.frame, text="OFF!", background="red", command=self.board.stop
+            self.frame, text="OFF!", background="red", command=self.stop_board
         )
         b1.grid(row=CONTROL_ROW, column=1)
+
+    def boot_board(self):
+        if not self.board_is_running:
+            self.board_is_running = True
+            self.board.main()
+
+    def stop_board(self):
+        self.board_is_running = False
+        self.board.stop()
 
     def init_leds(self):
         Label(self.frame, text="Leds").grid(row=BOARD_ROW, column=LEDS_COLUMN)
