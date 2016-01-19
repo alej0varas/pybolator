@@ -95,14 +95,17 @@ Methods
 - switch()
 - switch.callback(fun)
 
+Reset related functions
++++++++++++++++++++++++
+
+- hard_reset()
+
 Unsupported methods and classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Reset related functions
 +++++++++++++++++++++++
 
-
-- hard_reset()
 - bootloader()
 
 Interrupt related functions

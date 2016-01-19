@@ -14,14 +14,12 @@ class _Board:
 
     leds = {}
 
-    def init(self, hardware):
+    def init(self, hardware=None):
+        sys.stderr.write("BOARD:init\n")
         self.hardware = hardware
-        self.boot_time = datetime.now()
+        self.boot()
 
-        self.set_accel()
-        self.set_leds()
-        self.set_reset()
-        self.set_switch()
+        return self
 
     def set_accel(self):
         accel = self.hardware.get("accel")
@@ -49,7 +47,10 @@ class _Board:
             self.switch = _Switch('user')
 
     def main(self, pyb_script=None):
-        self.reboot()
+        sys.stderr.write("BOARD:main\n")
+        self.keep_interpreter_running = True
+        self.keep_user_script_running = True
+
         self.user_script_runner = _Runner(glo=globals())
         self.user_script_runner.start()
 
@@ -57,20 +58,28 @@ class _Board:
         self.interpreter.start()
 
     def stop_user_script(self):
+        sys.stderr.write("BOARD:stop_user_script\n")
         self.keep_user_script_running = False
 
     def stop_interpreter(self):
+        sys.stderr.write("BOARD:stop_interpreter\n")
         self.interpreter.stop()
 
     def stop(self):
+        sys.stderr.write("BOARD:stop\n")
         self.stop_interpreter()
         self.stop_user_script()
 
-    def reboot(self):
-        self.keep_interpreter_running = True
-        self.keep_user_script_running = True
-        self.runner = _Runner()
+    def boot(self):
+        sys.stderr.write("BOARD:boot\n")
+        self.boot_time = datetime.now()
 
+        self.set_accel()
+        self.set_leds()
+        self.set_reset()
+        self.set_switch()
+
+        self.runner = _Runner()
 
 
 class _Interpreter:
@@ -387,7 +396,7 @@ def hard_reset():
     """Resets the pyboard in a manner similar to pushing the external
     RESET button.
     """
-    raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
+    _board.boot()
 
 
 def bootloader():
