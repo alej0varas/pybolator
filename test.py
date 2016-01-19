@@ -1,5 +1,6 @@
 from tests import (
     test_accel,
+    test_lcd,
     test_led,
     test_switch,
     test_builtins
