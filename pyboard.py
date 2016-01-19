@@ -94,13 +94,12 @@ class _Interpreter:
         self.thread = threading.Thread(target=self.target)
 
     def target(self):
-        import time
         while _board.keep_interpreter_running:
             command = self.read()
             if command:
                 self.exec(command)
             self.update()
-            time.sleep(.5)
+            sleep(.5)
 
     def start(self):
         self.thread.start()

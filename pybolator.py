@@ -18,14 +18,15 @@ parser.add_argument('--hardware', type=argparse.FileType('r'),
 
 args = parser.parse_args()
 
-pyboard._board.init(json.loads(args.hardware.read()))
+hardware = json.loads(args.hardware.read())
+board = pyboard._board.init(hardware)
 
 
 if args.batch:
     script = None
     if not isinstance(args.batch, bool):
         script = args.batch.read()
-    pyboard._board.main(script)
+    board.main(script)
 else:
-    pybgui.main(pyboard._board)
+    pybgui.main(board)
 
