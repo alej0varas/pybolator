@@ -124,16 +124,18 @@ class _Interpreter:
         sys.stderr.write("INT:exec, %s \n" % command)
 
         if command == "sleep":
-            sys.stderr.write("INT:sleeping!!!")
+            sys.stderr.write("INT:sleeping!!!\n")
             sleep(1)
-        if command == "user-switch:press":
+        elif command == "user-switch:press":
             _board.switch._press()
         elif command == "user-switch:release":
             _board.switch._release()
-        if command == "reset-switch:press":
+        elif command == "reset-switch:press":
             _board.reset._press()
         elif command == "reset-switch:release":
             _board.reset._release()
+        else:
+            sys.stderr.write("INT:COMMAND NOT FOUND, %s \n" % command)
 
 
 class _Runner:
@@ -220,7 +222,7 @@ class _Switch:
         return self._pressed
 
     def callback(self, callable):
-        sys.stderr.write("SWITCH %s: callback %s\n" % (self._name, self._callable))
+        sys.stderr.write("SWITCH %s: callback %s\n" % (self._name, callable))
         self._callable = callable
 
     def _press(self):
@@ -280,6 +282,7 @@ def LCD(skin_position):
 
 
 def LED(number):
+    sys.stdout.write("PYB:LED:%s\n" % number)
     return _board.leds[number]
 
 

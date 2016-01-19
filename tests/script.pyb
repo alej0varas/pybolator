@@ -1,2 +1,5 @@
-switch:press
+sleep
+user-switch:press
+sleep
+user-switch:release
 switch:release
