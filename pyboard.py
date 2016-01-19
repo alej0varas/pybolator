@@ -171,17 +171,12 @@ class _Runner:
 class _Accel:
 
     def x(self):
-        sys.stderr.write("ACCEL:\n")
-        sys.stderr.write("\tx\n")
-
+        sys.stderr.write("ACCEL: x\n")
         return randint(0, 10)
 
     def y(self):
-        sys.stderr.write("ACCEL:\n")
-        sys.stderr.write("\ty\n")
-
+        sys.stderr.write("ACCEL: y\n")
         return randint(0, 10)
-
 
 
 class _LED:
@@ -191,27 +186,25 @@ class _LED:
         self._color = color
 
     def on(self):
+        sys.stderr.write("LED %s: on\n" % self._color)
         self._intensity = self._intensity_max
-        sys.stderr.write("LED %s:\n" % self._color)
-        sys.stderr.write("\t on\n")
 
     def off(self):
+        sys.stderr.write("LED %s: off\n" % self._color)
         self._intensity = self._intensity_min
-        sys.stderr.write("LED %s:\n" % self._color)
-        sys.stderr.write("\t off\n")
 
     def toggle(self):
+        sys.stderr.write("LED %s: toggle\n" % self._color)
         if self._intensity == self._intensity_min:
             return self.on()
         return self.off()
 
     def intensity(self, value=None):
+        sys.stderr.write("LED %s: intensity %d\n" % (self._color, value))
         if value is None:
             return self._intensity
 
         self._intensity = value
-        sys.stderr.write("LED %s:\n" % self._color)
-        sys.stderr.write("\t intensity %s\n" % self._intensity)
 
 
 class _Switch:
@@ -223,27 +216,20 @@ class _Switch:
         self._callable = callable
 
     def __call__(self):
-        sys.stderr.write("SWITCH %s:\n" % self._name)
-        sys.stderr.write("\t call > %s\n" % self._pressed)
-
+        sys.stderr.write("SWITCH %s call > %s:\n" % (self._name, self._pressed))
         return self._pressed
 
     def callback(self, callable):
+        sys.stderr.write("SWITCH %s: callback %s\n" % (self._name, self._callable))
         self._callable = callable
-        sys.stderr.write("SWITCH %s:\n" % self._name)
-        sys.stderr.write("\t callback %s\n" % self._callable)
 
     def _press(self):
+        sys.stderr.write("SWITCH %s: pressed\n" % self._name)
         self._pressed = True
 
-        sys.stderr.write("SWITCH %s:\n" % self._name)
-        sys.stderr.write("\t pressed\n")
-
     def _release(self):
+        sys.stderr.write("SWITCH %s: released\n" % self._name)
         self._pressed = False
-
-        sys.stderr.write("SWITCH %s:\n" % self._name)
-        sys.stderr.write("\t released\n")
 
     def _update(self):
         if self._pressed and self._callable is not None:
@@ -343,51 +329,37 @@ def Switch():
 #
 
 def delay(milliseconds):
-    sys.stderr.write("PYB:\n")
-    sys.stderr.write("\tdelay %s\n" % milliseconds)
+    sys.stderr.write("PYB: delay %s\n" % milliseconds)
     sleep(milliseconds / 1000)
 
 
 def udelay(us):
-    sys.stderr.write("PYB:\n")
-    sys.stderr.write("\tudelay %s\n" % us)
+    sys.stderr.write("PYB: udelay %s\n" % us)
     sleep(us / 1000000)
 
 
 def millis():
+    sys.stderr.write("PYB: millis\n")
     result = micros() / 1000
-
-    sys.stderr.write("PYB:\n")
-    sys.stderr.write("\tmillis %s\n" % result)
-
     return result
 
 
 def micros():
+    sys.stderr.write("PYB: micros\n")
     delta = datetime.now() - _board.boot_time
     result = delta.total_seconds() * 1000000
-
-    sys.stderr.write("PYB:\n")
-    sys.stderr.write("\tmicros %s\n" % result)
-
     return result
 
 
 def elapsed_millis(start):
+    sys.stderr.write("PYB: elapsed_millis\n")
     result = elapsed_micros(start) / 1000
-
-    sys.stderr.write("PYB:\n")
-    sys.stderr.write("\telapsed_millis %s\n" % result)
-
     return result
 
 
 def elapsed_micros(start):
+    sys.stderr.write("PYB: elapsed_micros\n")
     result = micros() - start
-
-    sys.stderr.write("PYB:\n")
-    sys.stderr.write("\telapsed_micros %s\n" % result)
-
     return result
 
 
