@@ -75,6 +75,23 @@ Methods
 - accel.x()
 - accel.y()
 
+Class pyb.LCD
++++++++++++++
+
+Methods
+#######
+
+- lcd(skin_position)
+- lcd.contrast(value)
+- lcd.fill(colour)
+- lcd.get(x, y)
+- lcd.light(value)
+- lcd.pixel(x, y, colour)
+- lcd.show()
+- lcd.text(str, x, y, colour)
+- lcd.write(str)
+
+
 Class pyb.LED
 +++++++++++++
 
@@ -148,6 +165,14 @@ Methods
 Class pyb.ADC
 +++++++++++++
 
+Class pyb.LCD
++++++++++++++
+
+Methods
+#######
+
+- lcd.command(instr_data, buf)
+
 Class pyb.CAN
 +++++++++++++
 
@@ -158,9 +183,6 @@ Class pyb.ExtInt
 ++++++++++++++++
 
 Class pyb.I2C
-+++++++++++++
-
-Class pyb.LCD
 +++++++++++++
 
 Class pyb.Pin

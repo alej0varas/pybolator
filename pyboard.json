@@ -1,6 +1,11 @@
 {
     "accel": true,
 
+    "LCD": {
+        "y": 32,
+        "x": 128
+    },
+
     "LEDS": {
 	"items": ["blue", "orange", "green", "red"],
 	"intensity_min": 0,

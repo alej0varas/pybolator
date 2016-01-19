@@ -6,6 +6,8 @@ import threading
 import os
 import sys
 
+from pyfiglet import Figlet
+
 
 MAIN_FILENAME = os.environ.get("PYBOLATOR_MAIN", "main.py")
 
@@ -25,6 +27,11 @@ class _Board:
         accel = self.hardware.get("accel")
         if accel is not None:
             self.accel = _Accel()
+
+    def set_LCD(self):
+        LCD = self.hardware.get("LCD")
+        if LCD:
+            self.LCD = _LCD(LCD)
 
     def set_leds(self):
         leds = self.hardware.get("LEDS")
@@ -75,6 +82,7 @@ class _Board:
         self.boot_time = datetime.now()
 
         self.set_accel()
+        self.set_LCD()
         self.set_leds()
         self.set_reset()
         self.set_switch()
@@ -181,6 +189,90 @@ class _Accel:
         return randint(0, 10)
 
 
+class _LCD:
+
+    def __init__(self, LCD):
+        self._y = LCD['y']
+        self._x = LCD['x']
+        self._buffer = None
+        self._hidden_buffer = {}
+
+    def __call__(self, skin_position):
+        self.skin_position = skin_position
+        if skin_position == 'Y':
+            self._x, self._y = self._y, self._x
+        self.fill(0)
+
+        return self
+
+    def command(self, instr_data, buf):
+        """Send an arbitrary command to the LCD. Pass 0 for instr_data to send
+        an instruction, otherwise pass 1 to send data. buf is a buffer
+        with the instructions/data to send.
+
+        """
+        sys.stderr.write("LCD:command: %s %s\n" % (instr_data, buf))
+        raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
+
+    def contrast(self, value):
+        sys.stderr.write("LCD:contrast: %s\n" % value)
+        self.contrast_value = value
+
+    def get(self, x, y):
+        sys.stderr.write("LCD:get: %sx%s\n" % (x, y))
+        if self._buffer is None:
+            return False
+        return self._buffer[(x, y)]
+
+    def light(self, value):
+        sys.stderr.write("LCD:light: %s\n" % value)
+        self.backlight = bool(value)
+
+    def fill(self, colour):
+        sys.stderr.write("LCD:fill: %s\n" % colour)
+        for y in range(self._y):
+            for x in range(self._x):
+                self.pixel(x, y, colour)
+
+    def pixel(self, x, y, colour):
+        # sys.stderr.write("LCD:fill: %sx%s %s\n" % (x, y, colour))
+        self._hidden_buffer[(x, y)] = colour
+
+    def show(self):
+        sys.stderr.write("LCD:show\n")
+        self._buffer = self._hidden_buffer.copy()
+        self.fill(0)
+
+    def text(self, text, x, y, colour):
+        sys.stderr.write("LCD:text %s %sx%s %s\n" % (text, x, y, colour))
+        figlet = Figlet(font='clr5x6', width=self._x)
+        txt = figlet.renderText(text)
+        dx = 0
+        dy = 0
+        for item in txt:
+            if item == ' ':
+                color = int(not bool(colour))
+            elif item == '#':
+                color = colour
+            elif item == '\n':
+                dy += 1
+                dx = 0
+                continue
+            self.pixel(dx + x, dy + y, color)
+            dx += 1
+
+    def write(self, text):
+        sys.stderr.write("LCD:write: %s\n" % text)
+        self.text(text, 0, 0, 0)
+        self.show()
+
+    def _print_hidden_buffer(self):
+        for y in range(self._y):
+            for x in range(self._x):
+                sys.stdout.write(str(self._hidden_buffer[(x, y)]))
+            sys.stdout.write('\n')
+
+
 class _LED:
 
     def __init__(self, color):
@@ -278,7 +370,8 @@ def I2C(bus):
 
 def LCD(skin_position):
     """http://docs.micropython.org/en/latest/library/pyb.LCD.html"""
-    raise NotImplementedError("Contribute on github.com/alej0varas/pybolator")
+    sys.stdout.write("PYB:LCD:%s\n" % skin_position)
+    return _board.LCD(skin_position)
 
 
 def LED(number):
