@@ -3,7 +3,8 @@
 
     "LCD": {
         "y": 32,
-        "x": 128
+        "x": 128,
+        "skin_position": "X"
     },
 
     "LEDS": {

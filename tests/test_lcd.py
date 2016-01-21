@@ -1,10 +1,15 @@
 import pyb
+import time
 
-txt = 'Hello World!'
-for sp in ['X', 'Y']:
-    for color in [0, 1]:
-        lcd = pyb.LCD(sp)
-        lcd.text(txt, 0, 0, color)
+txts = ['Hello World!', 'H\nW', 'x' * 100]
+
+for txt in txts:
+    for sp in ['X', 'Y']:
+        for color in [0, 1]:
+            lcd = pyb.LCD(sp)
+            lcd.text(txt, 0, 0, color)
+            lcd.show()
+            time.sleep(1)
 
 assert lcd.get(0, 0) == 0
 
@@ -13,7 +18,7 @@ lcd.write('Hello world!\n')     # print text to the screen
 
 x = y = 0
 dx = dy = 1
-for i in range(10):
+for i in range(50):
     # update the dot's position
     x += dx
     y += dy

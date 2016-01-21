@@ -194,6 +194,7 @@ class _LCD:
     def __init__(self, LCD):
         self._y = LCD['y']
         self._x = LCD['x']
+        self.skin_position = None
         self._buffer = None
         self._hidden_buffer = {}
 
@@ -241,11 +242,11 @@ class _LCD:
     def show(self):
         sys.stderr.write("LCD:show\n")
         self._buffer = self._hidden_buffer.copy()
-        self.fill(0)
 
     def text(self, text, x, y, colour):
         sys.stderr.write("LCD:text %s %sx%s %s\n" % (text, x, y, colour))
-        figlet = Figlet(font='clr5x6', width=self._x)
+        font = 'clr8x8'
+        figlet = Figlet(font=font, width=self._x)
         txt = figlet.renderText(text)
         dx = 0
         dy = 0
