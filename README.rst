@@ -14,15 +14,12 @@ Features
 - Run in batch mode and optionally
 - Simulate hardware interaction from a script.
 
-Dependencies
-============
+Install
+=======
+::
 
-python3-tk
-~~~~~~~~~~
-
-Debian based distros::
-
-  $ apt-get install python3-tk
+  $ pip install -r requirements.txt
+  $ sudo apt-get install python3-tk
 
 Run
 ~~~
